@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Assignment</string>
+    <string name="welcome_title">MarineMarvels</string>
+    <string name="welcome_words">Welcome to Marine Marvels</string>
+    <string name="welcome_home">Login or Sign up account to continue</string>
+    <string name="login_button">Login</string>
+    <string name="signup_button">Sign Up</string>
+    <string name="tologin_text">Already have an account?</string>
+    <string name="welcome_login">Welcome Back\n</string>
+    <string name="tosignup_text">Dont have any account?</string>
+    <string name="title_activity_login2">LoginActivity2</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="reset_button">Reset\n</string>
+    <string name="save_button">Save\n</string>
+    <string name="forgotpw">Enter your username and number to reset your password\n</string>
+    <string name="resetpw">Enter your new password</string>
+    <string name="origpw">Enter your Original Password</string>
+</resources>
