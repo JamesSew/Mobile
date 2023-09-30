@@ -33,13 +33,8 @@ class EditActivity : AppCompatActivity() {
 
     private lateinit var storageReference: StorageReference
 
-    companion object {
-        val IMAGE_REQUEST_CODE = 1_000
-    }
-
     // Register the contract to handle the image selection
-    private val imagePicker =
-        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+    private val imagePicker = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             if (uri != null) {
                 // Set the selected image to the ImageView
                 editImage.setImageURI(uri)
@@ -130,11 +125,9 @@ class EditActivity : AppCompatActivity() {
                     val retrievedProfilePic = snapshot.child("imageUri").value.toString()
 
                     // Display data in TextViews
-                    editDisplayname.text =
-                        Editable.Factory.getInstance().newEditable(retrievedDisplayName)
+                    editDisplayname.text = Editable.Factory.getInstance().newEditable(retrievedDisplayName)
                     editUsername.text = retrievedUsername
-                    editNumber.text =
-                        Editable.Factory.getInstance().newEditable(retrievedPhoneNumber)
+                    editNumber.text = Editable.Factory.getInstance().newEditable(retrievedPhoneNumber)
 
                     // Load the user's profile picture using Picasso
                     if (!userData?.imageUri.isNullOrEmpty()) {
@@ -142,11 +135,8 @@ class EditActivity : AppCompatActivity() {
                         Picasso.get().load(userData?.imageUri + "?timestamp=" + System.currentTimeMillis()).into(editImage)
                         editImage.tag = userData?.imageUri // Store the current image URI as a tag
                     } else {
-                        // Set the default profile picture from the drawable resources
                         editImage.setImageResource(R.drawable.avatar)
                     }
-
-                    // Set the imageUri variable to the retrieved profile picture URL
                     imageUri = Uri.parse(retrievedProfilePic) // Convert the URL to Uri
                 }
             }
@@ -158,26 +148,46 @@ class EditActivity : AppCompatActivity() {
     }
 
     private fun updateUserData(username: String, displayName: String, phoneNumber: String, imageUri: String) {
-        val userData = HashMap<String, Any>()
-        userData["username"] = username
-        userData["displayname"] = displayName
-        userData["number"] = phoneNumber
-        userData["imageUri"] = imageUri // Store the image URI
+        // Query the current user data to check if the imageUri has changed
+        database.child(username).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val currentImageUri = dataSnapshot.child("imageUri").value.toString()
 
-        // Update the user data in the database
-        database.updateChildren(userData)
-            .addOnSuccessListener {
-                // Start the ProfileActivity and pass the updated image URL as an extra
-                val profileIntent = Intent(this@EditActivity, ProfileActivity::class.java)
-                profileIntent.putExtra("username", username)
-                profileIntent.putExtra("imageUri", imageUri) // Pass the updated image URL
-                startActivity(profileIntent)
+                    // Check if the imageUri has changed
+                    if (currentImageUri != imageUri) {
+                        // Update only if the imageUri has changed
+                        val userData = HashMap<String, Any>()
+                        userData["username"] = username
+                        userData["displayname"] = displayName
+                        userData["number"] = phoneNumber
+                        userData["imageUri"] = imageUri // Store the image URI
 
-                Toast.makeText(this@EditActivity, "Profile Updated", Toast.LENGTH_SHORT).show()
+                        // Update the user data in the database
+                        database.child(username).updateChildren(userData).addOnSuccessListener {
+                                // Start the ProfileActivity and pass the updated image URL as an extra
+                                val profileIntent = Intent(this@EditActivity, ProfileActivity::class.java)
+                                profileIntent.putExtra("username", username)
+                                profileIntent.putExtra("imageUri", imageUri) // Pass the updated image URL
+                                startActivity(profileIntent)
+
+                                Toast.makeText(this@EditActivity, "Profile Updated", Toast.LENGTH_SHORT).show()
+                            }
+                            .addOnFailureListener {
+                                Toast.makeText(this@EditActivity, "Failed to update profile", Toast.LENGTH_SHORT).show()
+                            }
+                    } else {
+                        // The imageUri hasn't changed, no need to update
+                        // You can handle this case as needed
+                    }
+                }
             }
-            .addOnFailureListener {
-                Toast.makeText(this@EditActivity, "Failed to update profile", Toast.LENGTH_SHORT).show()
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Handle any database query errors here
+                Toast.makeText(this@EditActivity, "Database error: " + databaseError.message, Toast.LENGTH_SHORT).show()
             }
+        })
     }
 
     private fun uploadProfileImage(imageUri: Uri?, username: String) {
