@@ -18,7 +18,6 @@ class HomeActivity : AppCompatActivity() {
         viewProfileButton.setOnClickListener {
 
 
-            // Receive the user's username from intent extras
             val username = intent.getStringExtra("username")
 
 

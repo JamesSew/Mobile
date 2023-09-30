@@ -17,7 +17,7 @@ class ChangePWActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_change_pwactivity) // Replace with the correct layout file name
+        setContentView(R.layout.activity_change_pwactivity)
 
         newPasswordEditText = findViewById(R.id.changedPW)
         confirmNewPasswordEditText = findViewById(R.id.connchgedPW)
@@ -30,7 +30,6 @@ class ChangePWActivity : AppCompatActivity() {
 
             if (isValidPassword(newPassword)) {
                 if (newPassword == confirmPassword) {
-                    // Update the password in the database
                     val username = intent.getStringExtra("username")
                     if (username != null) {
                         updatePasswordInDatabase(username, newPassword)
@@ -42,7 +41,6 @@ class ChangePWActivity : AppCompatActivity() {
                         ).show()
                     }
                 } else {
-                    // Passwords do not match, display error toast
                     Toast.makeText(
                         this@ChangePWActivity,
                         "Confirm password did not match with password",
@@ -65,13 +63,10 @@ class ChangePWActivity : AppCompatActivity() {
     }
 
     private fun updatePasswordInDatabase(username: String, newPassword: String) {
-        // Use the username to locate the user data in the database
         val userReference = databaseReference.child(username)
 
-        // Update the password field
         userReference.child("password").setValue(newPassword)
 
-        // Display a success toast
         Toast.makeText(this@ChangePWActivity, "Password updated successfully", Toast.LENGTH_SHORT).show()
         val intent = Intent(this@ChangePWActivity, ProfileActivity::class.java)
         intent.putExtra("username", username)

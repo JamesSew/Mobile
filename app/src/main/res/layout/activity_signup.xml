@@ -141,7 +141,7 @@
         android:layout_marginTop="12dp"
         android:background="@android:drawable/editbox_background_normal"
         android:ems="10"
-        android:hint="Username (Permenant and Unchanged)"
+        android:hint="Username(CaseSensitive and Permenant)"
         android:inputType="textEmailAddress"
         android:textColor="@color/text_color"
         app:layout_constraintEnd_toEndOf="parent"

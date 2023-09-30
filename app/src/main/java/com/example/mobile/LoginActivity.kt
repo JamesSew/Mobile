@@ -27,7 +27,7 @@ class LoginActivity : AppCompatActivity() {
         databaseReference = firebaseDatabase.reference.child("users")
 
         binding.login2button.setOnClickListener {
-            val loginUsername = binding.loginUsername.text.toString() // Change "loginEmail" to "loginUsername"
+            val loginUsername = binding.loginUsername.text.toString()
             val loginPassword = binding.loginPassword.text.toString()
 
             if (loginUsername.isNotEmpty() && loginPassword.isNotEmpty()) {
@@ -47,8 +47,8 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    private fun loginUser(username: String, password: String) { // Change parameter name to "username"
-        databaseReference.orderByChild("username").equalTo(username) // Change "email" to "username"
+    private fun loginUser(username: String, password: String) {
+        databaseReference.orderByChild("username").equalTo(username)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.exists()) {
@@ -58,9 +58,8 @@ class LoginActivity : AppCompatActivity() {
                             if (userData != null && userData.password == password) {
                                 Toast.makeText(this@LoginActivity, "Login Successful", Toast.LENGTH_SHORT).show()
 
-                                // Redirect to HomeActivity and pass user's username as an extra
                                 val homeIntent = Intent(this@LoginActivity, HomeActivity::class.java)
-                                homeIntent.putExtra("username", username) // Change "email" to "username"
+                                homeIntent.putExtra("username", username)
                                 startActivity(homeIntent)
 
                                 finish()

@@ -50,15 +50,12 @@ class ResetpwActivity : AppCompatActivity() {
     }
 
     private fun updatePasswordInDatabase(username: String, newPassword: String) {
-        // Update the user's password in the database
         val userRef = database.child(username)
         userRef.child("password").setValue(newPassword)
 
-        // Navigate back to LoginActivity
         val intent = Intent(this@ResetpwActivity, LoginActivity::class.java)
         startActivity(intent)
 
-        // Finish the current activity so the user cannot go back to it
         finish()
     }
 }

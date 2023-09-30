@@ -24,7 +24,6 @@ class OriginalPWActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_original_pwactivity)
 
-        // Initialize Firebase Realtime Database
         databaseReference = FirebaseDatabase.getInstance().getReference("users")
 
         originalNameEditText = findViewById(R.id.originalName)
@@ -35,7 +34,6 @@ class OriginalPWActivity : AppCompatActivity() {
             val username = originalNameEditText.text.toString()
             val originalPassword = originalPWEditText.text.toString()
 
-            // Query the database to check for a matching record
             queryDatabaseForPassword(username, originalPassword)
         }
     }
@@ -48,9 +46,7 @@ class OriginalPWActivity : AppCompatActivity() {
                 if (dataSnapshot.exists()) {
                     for (userSnapshot in dataSnapshot.children) {
                         val userPassword = userSnapshot.child("password").value.toString()
-                        // Check if the provided original password matches the database
                         if (userPassword == originalPassword) {
-                            // Original password matches, navigate to your desired activity (e.g., ChangePWActivity)
                             val intent = Intent(this@OriginalPWActivity, ChangePWActivity::class.java)
                             intent.putExtra("username", username)
                             startActivity(intent)
@@ -60,12 +56,10 @@ class OriginalPWActivity : AppCompatActivity() {
                     }
                 }
 
-                // If no match is found, show a toast message
                 Toast.makeText(this@OriginalPWActivity, "Invalid username or original password.", Toast.LENGTH_SHORT).show()
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                // Handle any database query errors here
                 Toast.makeText(this@OriginalPWActivity, "Database error: " + databaseError.message, Toast.LENGTH_SHORT).show()
             }
         })

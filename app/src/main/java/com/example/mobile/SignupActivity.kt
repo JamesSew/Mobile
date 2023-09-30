@@ -28,30 +28,24 @@ class SignupActivity : AppCompatActivity() {
             val password = binding.signupPassword.text.toString()
             val confirmPassword = binding.signupConpass.text.toString()
 
-            // Validate phone number
             if (!isValidPhoneNumber(phoneNumber)) {
                 Toast.makeText(this, "Phone numbers should be within 10-11 digits and not contain alphabets", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Validate password
             if (!isValidPassword(password, confirmPassword)) {
                 Toast.makeText(this, "Password should contain at least 1 uppercase, 1 lowercase, 1 number, and 1 symbol", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // Generate a unique user ID using UUID
             val userId = username.toString()
 
             database = FirebaseDatabase.getInstance().getReference("users")
 
-            // Create a default avatar image URL
-            val defaultAvatarUrl = "android.resource://com.example.mobile/${R.drawable.avatar}" // Replace "your.package.name" with your app's package name
+            val defaultAvatarUrl = "android.resource://com.example.mobile/${R.drawable.avatar}"
 
-            // Create a new instance of UserData with a default avatar
             val userData = UserData(username, displayname, phoneNumber, password, defaultAvatarUrl)
 
-            // Set the data with the generated user ID as the key
             database.child(username).setValue(userData).addOnSuccessListener {
                 binding.signupDisplayname.text.clear()
                 binding.signupNumber.text.clear()
@@ -67,7 +61,6 @@ class SignupActivity : AppCompatActivity() {
         }
 
 
-        // Navigate to Login site
         val loginRedirectTextView = findViewById<TextView>(R.id.loginRedirect)
         loginRedirectTextView.setOnClickListener {
             val loginIntent = Intent(this@SignupActivity, LoginActivity::class.java)
@@ -76,12 +69,10 @@ class SignupActivity : AppCompatActivity() {
     }
 
     private fun isValidPhoneNumber(phoneNumber: String): Boolean {
-        // Phone number example 0105217526 no ABC
         return Pattern.matches("[0-9]+", phoneNumber) && (phoneNumber.length == 10 || phoneNumber.length == 11)
     }
 
     private fun isValidPassword(password: String, confirmPassword: String): Boolean {
-        // Password should contain at least 1 uppercase, 1 lowercase, 1 number, and 1 symbol
         val passwordPattern = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$".toRegex()
         return passwordPattern.matches(password) && password == confirmPassword
     }

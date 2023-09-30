@@ -23,7 +23,7 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var editProfileImageView: ImageView
     private lateinit var signOutImageView: ImageView
     private lateinit var changepassTextView: TextView
-    private lateinit var imageUri: String // Variable to store the imageUri
+    private lateinit var imageUri: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,13 +38,12 @@ class ProfileActivity : AppCompatActivity() {
         changepassTextView = findViewById(R.id.changePass)
 
         val username = intent.getStringExtra("username")
-        imageUri = intent.getStringExtra("imageUri") ?: "" // Get the imageUri from the intent or set it as an empty string if null
+        imageUri = intent.getStringExtra("imageUri") ?: ""
 
         if (!username.isNullOrBlank()) {
             database = FirebaseDatabase.getInstance().getReference("users").child(username)
             readUserData()
         } else {
-            // Handle the case of an invalid username as needed
         }
 
         editProfileImageView.setOnClickListener {
@@ -64,7 +63,6 @@ class ProfileActivity : AppCompatActivity() {
             startActivity(changepassIntent)
         }
     }
-
     private fun readUserData() {
         database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -76,26 +74,20 @@ class ProfileActivity : AppCompatActivity() {
                         profileUsernameTextView.text = userData.username
                         profileNumberTextView.text = userData.number
 
-                        // Load the user's profile picture using Picasso from the imageUri in the intent
                         if (!imageUri.isNullOrEmpty()) {
                             Picasso.get().load(imageUri + "?timestamp=" + System.currentTimeMillis()).into(profileImage)
                         } else if (!userData.imageUri.isNullOrEmpty()) {
-                            // If no imageUri is available in the intent, load the image from the database
                             Picasso.get().load(userData.imageUri + "?timestamp=" + System.currentTimeMillis()).into(profileImage)
                         } else {
-                            // Set the default profile picture from the drawable resources
                             profileImage.setImageResource(R.drawable.avatar)
                         }
                     } else {
-                        // Handle the case of null profile data as needed
                     }
                 } else {
-                    // Handle the case of a profile not found as needed
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Handle the database error as needed
             }
         })
     }

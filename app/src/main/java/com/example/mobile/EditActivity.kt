@@ -20,6 +20,7 @@ import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.squareup.picasso.Picasso
+import java.util.regex.Pattern
 
 class EditActivity : AppCompatActivity() {
 
@@ -29,14 +30,17 @@ class EditActivity : AppCompatActivity() {
     private lateinit var database: DatabaseReference
     private lateinit var editImage: ImageView
 
-    private var imageUri: Uri? = null // Initialize imageUri as null
+    private var imageUri: Uri? = null
 
     private lateinit var storageReference: StorageReference
 
-    // Register the contract to handle the image selection
-    private val imagePicker = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+    companion object {
+        val IMAGE_REQUEST_CODE = 1_000
+    }
+
+    private val imagePicker =
+        registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             if (uri != null) {
-                // Set the selected image to the ImageView
                 editImage.setImageURI(uri)
                 imageUri = uri
             }
@@ -46,75 +50,47 @@ class EditActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_editprofile)
 
-        // Initialize views
         editDisplayname = findViewById(R.id.editDisplayname)
         editUsername = findViewById(R.id.editUsername)
         editNumber = findViewById(R.id.editNumber)
         editImage = findViewById(R.id.editImage)
 
-        // Set a click listener for the editImage ImageView
         editImage.setOnClickListener {
             pickImageFromGallery()
         }
 
-        // Retrieve data and populate the views
         val username = intent.getStringExtra("username")
 
-        // Initialize Firebase database reference
         database = FirebaseDatabase.getInstance().getReference("users").child(username.toString())
-
-        // Initialize Firebase Storage reference
         storageReference = FirebaseStorage.getInstance().reference.child("profile_images")
 
         retrieveUserData(username.toString())
 
-        // Initialize save button
         val saveEdit = findViewById<Button>(R.id.saveEdit)
 
         saveEdit.setOnClickListener {
-            // Get the updated data from EditText fields
             val updatedUsername = editUsername.text.toString()
             val updatedDisplayname = editDisplayname.text.toString()
             val updatedNumber = editNumber.text.toString()
 
-            // Check if any of the text fields have changed
-            if (updatedUsername.isNotBlank()) {
-                if (updatedDisplayname.isNotBlank()) {
-                    if (updatedNumber.isNotBlank() && (updatedNumber.length == 10 || updatedNumber.length == 11)) {
-                        // Only update the user data if all fields are valid
-
-                        if (imageUri != null) {
-                            // An image is selected, so upload it to Firebase Storage
-                            uploadProfileImage(imageUri, updatedUsername)
-                        } else {
-                            // No image selected, update only textual information in the database
-                            updateUserData(updatedUsername, updatedDisplayname, updatedNumber, "")
-                        }
-                    } else {
-                        // Number is invalid (either empty or not 10 or 11 digits)
-                        Toast.makeText(
-                            this@EditActivity,
-                            "Please enter a valid number with 10 or 11 digits",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
+            if (isPhoneNumberValid(updatedNumber) && updatedDisplayname.isNotBlank() && updatedUsername.isNotBlank()) {
+                if (imageUri != null) {
+                    uploadProfileImage(imageUri, updatedUsername)
                 } else {
-                    // Displayname is invalid (empty)
-                    Toast.makeText(
-                        this@EditActivity,
-                        "Display Name cannot be blank",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    updateUserData(updatedUsername, updatedDisplayname, updatedNumber, "")
                 }
             } else {
-                // Username is invalid (empty)
-                Toast.makeText(this@EditActivity, "Username cannot be blank", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(
+                    this@EditActivity,
+                    "Please enter valid information. Phone number should be 10 or 11 digits long and contain only digits.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
+
     }
 
-        private fun retrieveUserData(username: String) {
+    private fun retrieveUserData(username: String) {
         database.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
@@ -124,20 +100,21 @@ class EditActivity : AppCompatActivity() {
                     val retrievedPhoneNumber = snapshot.child("number").value.toString()
                     val retrievedProfilePic = snapshot.child("imageUri").value.toString()
 
-                    // Display data in TextViews
-                    editDisplayname.text = Editable.Factory.getInstance().newEditable(retrievedDisplayName)
+                    editDisplayname.text =
+                        Editable.Factory.getInstance().newEditable(retrievedDisplayName)
                     editUsername.text = retrievedUsername
-                    editNumber.text = Editable.Factory.getInstance().newEditable(retrievedPhoneNumber)
+                    editNumber.text =
+                        Editable.Factory.getInstance().newEditable(retrievedPhoneNumber)
 
-                    // Load the user's profile picture using Picasso
                     if (!userData?.imageUri.isNullOrEmpty()) {
-                        // Load the user's profile picture using Picasso with a unique query parameter
-                        Picasso.get().load(userData?.imageUri + "?timestamp=" + System.currentTimeMillis()).into(editImage)
-                        editImage.tag = userData?.imageUri // Store the current image URI as a tag
+                        Picasso.get()
+                            .load(userData?.imageUri + "?timestamp=" + System.currentTimeMillis()).into(editImage)
+                        editImage.tag = userData?.imageUri
                     } else {
                         editImage.setImageResource(R.drawable.avatar)
                     }
-                    imageUri = Uri.parse(retrievedProfilePic) // Convert the URL to Uri
+
+                    imageUri = Uri.parse(retrievedProfilePic)
                 }
             }
 
@@ -148,46 +125,24 @@ class EditActivity : AppCompatActivity() {
     }
 
     private fun updateUserData(username: String, displayName: String, phoneNumber: String, imageUri: String) {
-        // Query the current user data to check if the imageUri has changed
-        database.child(username).addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    val currentImageUri = dataSnapshot.child("imageUri").value.toString()
+        val userData = HashMap<String, Any>()
+        userData["username"] = username
+        userData["displayname"] = displayName
+        userData["number"] = phoneNumber
+        userData["imageUri"] = imageUri
 
-                    // Check if the imageUri has changed
-                    if (currentImageUri != imageUri) {
-                        // Update only if the imageUri has changed
-                        val userData = HashMap<String, Any>()
-                        userData["username"] = username
-                        userData["displayname"] = displayName
-                        userData["number"] = phoneNumber
-                        userData["imageUri"] = imageUri // Store the image URI
+        database.updateChildren(userData)
+            .addOnSuccessListener {
+                val profileIntent = Intent(this@EditActivity, ProfileActivity::class.java)
+                profileIntent.putExtra("username", username)
+                profileIntent.putExtra("imageUri", imageUri)
+                startActivity(profileIntent)
 
-                        // Update the user data in the database
-                        database.child(username).updateChildren(userData).addOnSuccessListener {
-                                // Start the ProfileActivity and pass the updated image URL as an extra
-                                val profileIntent = Intent(this@EditActivity, ProfileActivity::class.java)
-                                profileIntent.putExtra("username", username)
-                                profileIntent.putExtra("imageUri", imageUri) // Pass the updated image URL
-                                startActivity(profileIntent)
-
-                                Toast.makeText(this@EditActivity, "Profile Updated", Toast.LENGTH_SHORT).show()
-                            }
-                            .addOnFailureListener {
-                                Toast.makeText(this@EditActivity, "Failed to update profile", Toast.LENGTH_SHORT).show()
-                            }
-                    } else {
-                        // The imageUri hasn't changed, no need to update
-                        // You can handle this case as needed
-                    }
-                }
+                Toast.makeText(this@EditActivity, "Profile Updated", Toast.LENGTH_SHORT).show()
             }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Handle any database query errors here
-                Toast.makeText(this@EditActivity, "Database error: " + databaseError.message, Toast.LENGTH_SHORT).show()
+            .addOnFailureListener {
+                Toast.makeText(this@EditActivity, "Failed to update profile", Toast.LENGTH_SHORT).show()
             }
-        })
     }
 
     private fun uploadProfileImage(imageUri: Uri?, username: String) {
@@ -196,12 +151,9 @@ class EditActivity : AppCompatActivity() {
 
             val uploadTask = storageRef.putFile(imageUri)
             uploadTask.addOnSuccessListener {
-                // Image uploaded successfully
-                // Get the download URL
                 storageRef.downloadUrl.addOnSuccessListener { uri ->
-                    val imageUrl = uri.toString() // This is the HTTPS URL of the uploaded image
+                    val imageUrl = uri.toString()
 
-                    // Update the user's data with the new image URI (imageUrl)
                     updateUserData(username, editDisplayname.text.toString(), editNumber.text.toString(), imageUrl)
 
                     Toast.makeText(this@EditActivity, "Profile Image Updated", Toast.LENGTH_SHORT).show()
@@ -210,13 +162,17 @@ class EditActivity : AppCompatActivity() {
                 Toast.makeText(this@EditActivity, "Failed to upload profile image", Toast.LENGTH_SHORT).show()
             }
         } else {
-            // No image selected, update only textual information in the database
             updateUserData(username, editDisplayname.text.toString(), editNumber.text.toString(), "")
         }
     }
 
     private fun pickImageFromGallery() {
-        // Use the imagePicker contract to select an image from the gallery
         imagePicker.launch("image/*")
+    }
+
+    private fun isPhoneNumberValid(phoneNumber: String): Boolean {
+        val phonePattern = Pattern.compile("^[0-9]{10,11}$")
+        val matcher = phonePattern.matcher(phoneNumber)
+        return matcher.matches()
     }
 }

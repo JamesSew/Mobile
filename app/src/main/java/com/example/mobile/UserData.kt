@@ -5,5 +5,5 @@ data class UserData(
     var displayname: String? = null,
     var number: String? = null,
     var password: String? = null,
-    var imageUri: String? = null // Add an image field to store the image URI
+    var imageUri: String? = null
 )

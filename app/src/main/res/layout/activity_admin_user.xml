@@ -6,94 +6,117 @@
     android:layout_height="match_parent"
     tools:context=".AdminUserActivity">
 
+        <TextView
+            android:id="@+id/modifyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="80dp"
+            android:fontFamily="@font/baloo"
+            android:text="Modify User Here"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/userPP"
-        android:layout_width="171dp"
-        android:layout_height="169dp"
-        android:layout_marginTop="24dp"
-        android:src="@drawable/avatar"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchButton"></ImageView>
+        <EditText
+            android:id="@+id/userDisname"
+            android:layout_width="350dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:background="@android:drawable/editbox_background_normal"
+            android:backgroundTint="#DEDFF6"
+            android:ems="10"
+            android:hint="Display Name"
+            android:inputType="text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.56"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/userName" />
 
-    <Button
-        android:id="@+id/deleteButton"
-        android:layout_width="343dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="32dp"
-        android:layout_marginTop="20dp"
-        android:backgroundTint="#F44336"
-        android:text="Delete User"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userNum" />
+        <ImageView
+            android:id="@+id/userPP"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="32dp"
+            android:src="@drawable/avatar"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/searchButton"></ImageView>
 
-    <EditText
-        android:id="@+id/userName"
-        android:layout_width="343dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="12dp"
-        android:background="@android:drawable/editbox_background_normal"
-        android:backgroundTint="#DEDFF6"
-        android:ems="10"
-        android:hint="Username"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.558"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userPP"></EditText>
+        <Button
+            android:id="@+id/saveUserButton"
+            android:layout_width="150dp"
+            android:layout_height="51dp"
+            android:layout_marginTop="40dp"
+            android:backgroundTint="#38B135"
+            android:text="Save Edit"
+            app:layout_constraintEnd_toStartOf="@+id/deleteButton"
+            app:layout_constraintHorizontal_bias="0.825"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/userNum" />
 
-    <EditText
-        android:id="@+id/userDisname"
-        android:layout_width="343dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="20dp"
-        android:background="@android:drawable/editbox_background_normal"
-        android:backgroundTint="#DEDFF6"
-        android:ems="10"
-        android:hint="Display Name"
-        android:inputType="text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.558"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userName" />
+        <Button
+            android:id="@+id/searchButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Search"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/searchUser" />
 
-    <EditText
-        android:id="@+id/userNum"
-        android:layout_width="343dp"
-        android:layout_height="60dp"
-        android:layout_marginTop="20dp"
-        android:background="@android:drawable/editbox_background_normal"
-        android:backgroundTint="#DEDFF6"
-        android:ems="10"
-        android:hint="Contact Number"
-        android:inputType="text"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.558"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/userDisname" />
+        <EditText
+            android:id="@+id/userNum"
+            android:layout_width="350dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="20dp"
+            android:background="@android:drawable/editbox_background_normal"
+            android:backgroundTint="#DEDFF6"
+            android:ems="10"
+            android:hint="Contact Number"
+            android:inputType="text"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.56"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/userDisname" />
 
-    <EditText
-        android:id="@+id/searchUser"
-        android:layout_width="318dp"
-        android:layout_height="48dp"
-        android:layout_marginTop="96dp"
-        android:fontFamily="@font/baloo"
-        android:hint="Enter Username"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.494"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <EditText
+            android:id="@+id/searchUser"
+            android:layout_width="318dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/baloo"
+            android:hint="Enter Username"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.492"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/modifyText" />
 
-    <Button
-        android:id="@+id/searchButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Search"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchUser" />
+        <TextView
+            android:id="@+id/userName"
+            android:layout_width="350dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="4dp"
+            android:background="@android:drawable/editbox_background_normal"
+            android:backgroundTint="#DEDFF6"
+            android:ems="10"
+            android:hint="Username"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.56"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/userPP"></TextView>
+
+        <Button
+            android:id="@+id/deleteButton"
+            android:layout_width="150dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="64dp"
+            android:backgroundTint="#F44336"
+            android:text="Delete User"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/userNum" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
